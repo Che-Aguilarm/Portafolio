@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Step Form</title>
+    <link href="estilos.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="form-container">
+        <!-- Formulario -->
+        <form method="post" action="https://script.google.com/macros/s/AKfycbyob0DgG99TjaGSekl95pqOk3GW-buIfWliSnBV_axT3QD5-L_7--wnbS2VS2pTyUlO/exec" name="contact-form" onsubmit="handleFormSubmit(event)">
+            
+            <!-- Hidden inputs for storing selected values -->
+            <input type="hidden" id="travelType" name="travelType" value="">
+            <input type="hidden" id="destination" name="destination" value="">
+            
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+
+            <!-- Step 1 -->
+            <div class="step active">
+                <h2>Who are you traveling with?</h2>
+                <div class="options">
+                    <div class="option" data-value="Luxury" onclick="selectOption(this, 'travelType')">
+                        <div class="title">Luxury</div>
+                        <div class="info">
+                            <p>Disfruta de los destinos turísticos de manera personalizada y única, sin multitudes, y con atención a cada detalle. Desde paseos y guías privados que te permitirán conocer Perú a tu propio ritmo y con total comodidad. Además, te hospedarás en los mejores hoteles de Cusco.</p>
+                            <a href="URL">ver opciones</a>
+                        </div>
+                        <div class="checkmark">✓</div>
+                    </div>
+                    <div class="option" data-value="Learn and Explore" onclick="selectOption(this, 'travelType')">
+                        <div class="title">Learn and Explore</div>
+                        <div class="info">
+                            <p>Discover new places and cultures, and immerse yourself in authentic experiences with knowledgeable guides.</p>
+                        </div>
+                        <div class="checkmark">✓</div>
+                    </div>
+                    <div class="option" data-value="Explorer" onclick="selectOption(this, 'travelType')">
+                        <div class="title">Explorer</div>
+                        <div class="info">
+                            <p>Discover new places and cultures, and immerse yourself in authentic experiences with knowledgeable guides.</p>
+                        </div>
+                        <div class="checkmark">✓</div>
+                    </div>
+                    <div class="option" data-value="Comfort" onclick="selectOption(this, 'travelType')">
+                        <div class="title">Comfort</div>
+                        <div class="info">
+                            <p>Travel with ease and comfort, at your own pace, enjoying relaxing amenities throughout your stay.</p>
+                        </div>
+                        <div class="checkmark">✓</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step">
+                <h2>Where do you want to go?</h2>
+                <div class="options">
+                    <div class="option" data-value="Family with infant(s)" onclick="selectOption(this, 'destination')">
+                        <div class="title">With family and infant(s)</div>
+                        <div class="checkmark">✓</div>
+                    </div>
+                    <div class="option" data-value="Family with child(ren)" onclick="selectOption(this, 'destination')">
+                        <div class="title">With family and child(ren)</div>
+                        <div class="checkmark">✓</div>
+                    </div>
+                    <div class="option" data-value="Family with teenager(s)" onclick="selectOption(this, 'destination')">
+                        <div class="title">With family and teenager(s)</div>
+                        <div class="checkmark">✓</div>
+                    </div>
+                    <div class="option" data-value="With a partner" onclick="selectOption(this, 'destination')">
+                        <div class="title">With a partner</div>
+                        <div class="checkmark">✓</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step">
+                <h2>Completa tus datos personales</h2>
+                <div class="form-group">
+                    <div class="input-field full-width">
+                        <label class="input-label" for="nombre">Nombre completo</label>
+                        <input type="text" class="input" id="nombre" name="nombre" placeholder="Tu nombre" required>
+                    </div>
+                    <div class="input-field full-width">
+                        <label class="input-label" for="email">E-mail</label>
+                        <input type="email" class="input" id="email" name="email" placeholder="tuemail@ejemplo.com" required>
+                    </div>
+                    <div class="input-field">
+                        <label class="input-label" for="pais">País</label>
+                        <input type="text" class="input" id="pais" name="pais" placeholder="País de residencia" required>
+                    </div>
+                    <div class="input-field">
+                        <label class="input-label" for="whatsapp">WhatsApp</label>
+                        <input type="tel" class="input" id="whatsapp" name="whatsapp" placeholder="+519842651561" pattern="[+0-9\s-]+" title="Use el formato correcto de número de teléfono" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading and Success Messages -->
+            <div id="loading" style="display: none;">Cargando...</div>
+            <div id="success-message" style="display: none;">¡Formulario enviado con éxito!</div>
+
+            <!-- Navigation Buttons -->
+            <div class="buttons">
+                <button type="button" class="btn" id="prevBtn" onclick="nextStep(-1)">Back</button>
+                <button type="button" class="btn" id="nextBtn" onclick="nextStep(1)">Continue</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        const steps = document.querySelectorAll('.step');
+        const progress = document.getElementById('progress');
+
+        function updateProgress() {
+            const progressWidth = ((currentStep + 1) / steps.length) * 100;
+            progress.style.width = `${progressWidth}%`;
+        }
+
+        function showStep() {
+            steps.forEach((step, index) => {
+                step.classList.toggle('active', index === currentStep);
+            });
+
+            document.getElementById("prevBtn").disabled = currentStep === 0;
+
+            // Cambia el texto del botón de "Continuar" a "Enviar" en el último paso
+            if (currentStep === steps.length - 1) {
+                document.getElementById("nextBtn").innerHTML = "Submit";
+                document.getElementById("nextBtn").type = "submit";
+            } else {
+                document.getElementById("nextBtn").innerHTML = "Continue";
+                document.getElementById("nextBtn").type = "button";
+            }
+
+            updateProgress();
+        }
+
+        function nextStep(n) {
+            // Validación antes de avanzar
+            if (n === 1) { // Solo validamos si se está avanzando (no retrocediendo)
+                const currentInputs = steps[currentStep].querySelectorAll('input');
+                for (let input of currentInputs) {
+                    if (input.hasAttribute('required') && !input.value) {
+                        alert('Por favor, completa todos los campos antes de continuar.');
+                        return; // Evita avanzar si hay campos vacíos
+                    }
+                }
+            }
+
+            // Avanza o retrocede
+            currentStep += n;
+
+            // Si llegamos al último paso, permitimos enviar el formulario
+            if (currentStep >= steps.length) {
+                document.querySelector('form').submit(); // Enviar el formulario
+                return;
+            }
+
+            // Muestra el paso actual
+            showStep();
+        }
+
+        function selectOption(optionElement, hiddenFieldId) {
+            const options = optionElement.parentNode.querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+            optionElement.classList.add('selected');
+            
+            // Asignar el valor seleccionado al campo oculto correspondiente
+            const selectedValue = optionElement.getAttribute('data-value');
+            document.getElementById(hiddenFieldId).value = selectedValue;
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault(); // Evita el envío inmediato del formulario
+
+            // Muestra la animación de carga
+            document.getElementById('loading').style.display = 'block';
+
+            const form = event.target;
+            const url = form.action;
+            const formData = new FormData(form);
+
+            fetch(url, {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => {
+                // Oculta la animación de carga
+                document.getElementById('loading').style.display = 'none';
+
+                if (response.ok) {
+                    // Muestra el mensaje de éxito
+                    document.getElementById('success-message').style.display = 'block';
+
+                    // Redirige después de un breve retraso
+                    setTimeout(() => {
+                        window.location.href = 'https://www.machupicchuperutours.com/confirmacion/';
+                    }, 2000); // Retraso de 2 segundos
+                } else {
+                    alert('Error al enviar el formulario. Por favor, intenta nuevamente.');
+                }
+            })
+            .catch(error => {
+                // Oculta la animación de carga en caso de error
+                document.getElementById('loading').style.display = 'none';
+                console.error('Error:', error);
+                alert('Error al enviar el formulario. Por favor, intenta nuevamente.');
+            });
+        }
+
+        showStep(); // Mostrar el paso inicial al cargar
+    </script>
+</body>
+</html>
